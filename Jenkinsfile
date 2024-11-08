@@ -107,9 +107,7 @@ pipeline {
 
         stage('Archive') {
             steps {
-                dir('react-app') {
-                    archiveArtifacts artifacts: 'build/**/*', fingerprint: true
-                }
+                archiveArtifacts artifacts: 'build/**/*', fingerprint: true
             }
         }
     }
