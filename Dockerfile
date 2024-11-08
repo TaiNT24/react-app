@@ -26,7 +26,7 @@ COPY --from=build-stage /app/build/ /usr/share/nginx/html
 
 WORKDIR /app
 
-RUN npm install -g serve
+# RUN npm install -g serve
 
 # RUN chown -R nginx:nginx /app && chmod -R 755 /app && \
 #         chown -R nginx:nginx /var/cache/nginx && \
