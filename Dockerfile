@@ -16,26 +16,30 @@ COPY . .
 # RUN npm run build
 
 # Production Stage
-FROM nginx:alpine
+FROM node:18-alpine as production-stage
 
 # Copy the NGINX configuration file
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy the build artifacts from the build stage to NGINX web server
 COPY --from=build-stage /app/build/ /usr/share/nginx/html
 
 WORKDIR /app
-RUN chown -R nginx:nginx /app && chmod -R 755 /app && \
-        chown -R nginx:nginx /var/cache/nginx && \
-        chown -R nginx:nginx /var/log/nginx && \
-        chown -R nginx:nginx /etc/nginx/conf.d
-RUN touch /var/run/nginx.pid && \
-        chown -R nginx:nginx /var/run/nginx.pid
 
-USER nginx
+RUN npm install -g serve 
+
+# RUN chown -R nginx:nginx /app && chmod -R 755 /app && \
+#         chown -R nginx:nginx /var/cache/nginx && \
+#         chown -R nginx:nginx /var/log/nginx && \
+#         chown -R nginx:nginx /etc/nginx/conf.d
+# RUN touch /var/run/nginx.pid && \
+#         chown -R nginx:nginx /var/run/nginx.pid
+
+# USER nginx
 
 # Expose port 80 for the NGINX server
-EXPOSE 80
+EXPOSE 3000
 
 # Command to start NGINX when the container is run
-CMD ["nginx", "-g", "daemon off;"]
+# CMD ["nginx", "-g", "daemon off;"]
+CMD ["serve", "-s", "build", "-l", "3000"]
