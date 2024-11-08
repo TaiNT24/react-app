@@ -22,7 +22,6 @@ pipeline {
                     env.DOCKER_TAG = gitCommit
                     echo "Git Commit Hash: ${gitCommit}"
                     echo "Git Commit Hash: ${env.DOCKER_TAG}"
-                    echo "Git Commit Hash: ${DOCKER_TAG}"
                 }
             }
         }
@@ -75,9 +74,7 @@ pipeline {
             steps {
                 // sh 'docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} .'
                 script {
-                    echo "Building Docker Image: ${DOCKER_IMAGE}:${env.DOCKER_TAG}"
-                    echo "Building Docker Image: ${DOCKER_IMAGE}:${DOCKER_TAG}"
-                    docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
+                    docker.build("${DOCKER_IMAGE}:${env.DOCKER_TAG}")
                 }
             }
         }
@@ -91,7 +88,7 @@ pipeline {
                 // '''
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', DOCKER_CREDENTIALS_ID) {
-                        docker.image("${DOCKER_IMAGE}:${DOCKER_TAG}").push()
+                        docker.image("${DOCKER_IMAGE}:${env.DOCKER_TAG}").push()
                     }
                 }
             }
