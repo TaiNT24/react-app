@@ -38,7 +38,7 @@ WORKDIR /app
 # USER nginx
 
 # Expose port 80 for the NGINX server
-EXPOSE 3000
+EXPOSE 80
 
 # Command to start NGINX when the container is run
 CMD ["nginx", "-g", "daemon off;"]
