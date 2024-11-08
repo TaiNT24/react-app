@@ -20,6 +20,8 @@ pipeline {
                 script {
                     def gitCommit = sh(script: 'git rev-parse --short=6 HEAD', returnStdout: true).trim()
                     env.DOCKER_TAG = gitCommit
+                    echo "Git Commit Hash: ${gitCommit}"
+                    echo "Git Commit Hash: ${env.DOCKER_TAG}"
                 }
             }
         }
@@ -72,6 +74,8 @@ pipeline {
             steps {
                 // sh 'docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} .'
                 script {
+                    echo "Building Docker Image: ${DOCKER_IMAGE}:${env.DOCKER_TAG}"
+                    echo "Building Docker Image: ${DOCKER_IMAGE}:${DOCKER_TAG}"
                     docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
                 }
             }
