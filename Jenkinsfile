@@ -22,6 +22,7 @@ pipeline {
                     env.DOCKER_TAG = gitCommit
                     echo "Git Commit Hash: ${gitCommit}"
                     echo "Git Commit Hash: ${env.DOCKER_TAG}"
+                    echo "Git Commit Hash: ${DOCKER_TAG}"
                 }
             }
         }
