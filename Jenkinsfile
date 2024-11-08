@@ -5,7 +5,7 @@ pipeline {
     environment {
         DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'
         DOCKER_IMAGE = 'nguyentutai12/react-app'
-        DOCKER_TAG = ''
+        // DOCKER_TAG = ''
     }
 
     stages {
@@ -19,9 +19,9 @@ pipeline {
             steps {
                 script {
                     def gitCommit = sh(script: 'git rev-parse --short=6 HEAD', returnStdout: true).trim()
-                    env.DOCKER_TAG = gitCommit
+                    DOCKER_TAG = gitCommit
                     echo "Git Commit Hash: ${gitCommit}"
-                    echo "Git Commit Hash: ${env.DOCKER_TAG}"
+                    echo "Git Commit Hash: ${DOCKER_TAG}"
                 }
             }
         }
@@ -74,7 +74,7 @@ pipeline {
             steps {
                 // sh 'docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} .'
                 script {
-                    docker.build("${DOCKER_IMAGE}:${env.DOCKER_TAG}")
+                    docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
                 }
             }
         }
@@ -88,7 +88,7 @@ pipeline {
                 // '''
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', DOCKER_CREDENTIALS_ID) {
-                        docker.image("${DOCKER_IMAGE}:${env.DOCKER_TAG}").push()
+                        docker.image("${DOCKER_IMAGE}:${DOCKER_TAG}").push()
                     }
                 }
             }
