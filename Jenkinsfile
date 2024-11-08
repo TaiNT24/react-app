@@ -3,8 +3,9 @@ pipeline {
         label 'nodejs-slave'
     }
     environment {
-        DOCKER_IMAGE = 'react-app'
-        DOCKER_TAG = 'latest'
+        DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'
+        DOCKER_IMAGE = 'nguyentutai12/react-app'
+        DOCKER_TAG = ${GIT_COMMIT, length=6}
     }
 
     stages {
@@ -16,26 +17,20 @@ pipeline {
         
         stage('Install Dependencies') {
             steps {
-                dir('react-app') {
-                    sh 'npm install'
-                }
+                sh 'npm install'
             }
             
         }
         
         stage('Build') {
             steps {
-                dir('react-app') {
-                    sh 'npm run build'
-                }
+                sh 'npm run build'
             }
         }
         
         stage('Test') {
             steps {
-                dir('react-app') {
-                    sh 'npm test -- --watchAll=false'
-                }
+                sh 'npm test -- --watchAll=false'
             }
         }
 
@@ -56,21 +51,37 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                dir('react-app') {
-                    sh 'docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} .'
+                // sh 'docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} .'
+                script {
+                    docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Push') {
             steps {
-                sh '''
-                    docker stop react-app || true
-                    docker rm react-app || true
-                    docker run -d --name react-app -p 3000:80 ${DOCKER_IMAGE}:${DOCKER_TAG}
-                '''
+                // sh '''
+                //     docker stop react-app || true
+                //     docker rm react-app || true
+                //     docker run -d --name react-app -p 3000:80 ${DOCKER_IMAGE}:${DOCKER_TAG}
+                // '''
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', DOCKER_CREDENTIALS_ID) {
+                        docker.image("${DOCKER_IMAGE}:${DOCKER_TAG}").push()
+                    }
+                }
             }
         }
+
+        // stage('Deploy') {
+        //     steps {
+        //         sh '''
+        //             docker stop react-app || true
+        //             docker rm react-app || true
+        //             docker run -d --name react-app -p 3000:80 ${DOCKER_IMAGE}:${DOCKER_TAG}
+        //         '''
+        //     }
+        // }
 
 
         stage('Archive') {
