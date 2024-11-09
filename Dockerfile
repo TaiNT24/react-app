@@ -1,33 +1,34 @@
-# Build stage
+# Build Stage
 FROM node:18 AS build
 
 WORKDIR /app
 
 ENV CI=false
 
-# Copy package.json and package-lock.json to the container
+# Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy the rest of the application code
+# Copy the rest of the application files to the working directory
 COPY . .
 
-# Build the React app
+# Build the React application
 RUN npm run build
 
-# Serve stage
-FROM nginx:alpine
+# Production Stage
+# FROM nginx:alpine as production-stage
+FROM node:18-alpine  as production
 
-# Copy the custom nginx.conf file to the container
-COPY .docker/nginx.conf /etc/nginx/nginx.conf
+COPY --from=build /app/build/ /app/build/
 
-# Copy the built React app from the build stage to the nginx container
-COPY --from=build /app/build /usr/share/nginx/html
+WORKDIR /app
 
-# Expose port 80
-EXPOSE 80
+RUN npm install -g serve
+# Expose port 80 for the NGINX server
+EXPOSE 3000
 
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Command to start NGINX when the container is run
+# CMD ["nginx", "-g", "daemon off;"]
+CMD ["serve", "-s", "build", "-l", "3000"]
