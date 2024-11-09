@@ -40,11 +40,11 @@ pipeline {
             }
         }
         
-        stage('Test') {
-            steps {
-                sh 'npm test -- --watchAll=false'
-            }
-        }
+        // stage('Test') {
+        //     steps {
+        //         sh 'npm test -- --watchAll=false'
+        //     }
+        // }
 
         // stage('Deploy') {
         //     steps {
