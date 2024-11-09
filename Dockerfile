@@ -1,44 +1,31 @@
-# Build Stage
-FROM node:latest as build-stage
+# Build stage
+FROM node:18 AS build
 
 WORKDIR /app
 
-# Copy package.json and package-lock.json to the working directory
+# Copy package.json and package-lock.json to the container
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy the rest of the application files to the working directory
+# Copy the rest of the application code
 COPY . .
 
-# Build the React application
+# Build the React app
 RUN npm run build
 
-# Production Stage
-FROM nginx:alpine as production-stage
+# Serve stage
+FROM nginx:alpine
 
-# Copy the NGINX configuration file
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy the custom nginx.conf file to the container
+COPY .docker/nginx.conf /etc/nginx/nginx.conf
 
-# Copy the build artifacts from the build stage to NGINX web server
-COPY --from=build-stage /app/build/ /usr/share/nginx/html
-COPY --from=build-stage /app/build/ /app/build/
+# Copy the built React app from the build stage to the nginx container
+COPY --from=build /app/build /usr/share/nginx/html
 
-WORKDIR /app
-
-# RUN chown -R nginx:nginx /app && chmod -R 755 /app && \
-#         chown -R nginx:nginx /var/cache/nginx && \
-#         chown -R nginx:nginx /var/log/nginx && \
-#         chown -R nginx:nginx /etc/nginx/conf.d
-# RUN touch /var/run/nginx.pid && \
-#         chown -R nginx:nginx /var/run/nginx.pid
-
-# USER nginx
-
-# Expose port 80 for the NGINX server
+# Expose port 80
 EXPOSE 80
 
-# Command to start NGINX when the container is run
+# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
-# CMD ["serve", "-s", "build", "-l", "3000"]
