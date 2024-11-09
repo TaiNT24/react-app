@@ -5,6 +5,7 @@ pipeline {
     environment {
         DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'
         DOCKER_IMAGE = 'nguyentutai12/react-app'
+        CI = 'false'
         // DOCKER_TAG = ''
     }
 
