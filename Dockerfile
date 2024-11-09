@@ -13,7 +13,7 @@ RUN npm install
 COPY . .
 
 # Build the React app
-RUN CI=false npm run build
+RUN export CI=false && npm run build
 
 # Serve stage
 FROM nginx:alpine
