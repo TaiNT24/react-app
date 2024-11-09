@@ -3,6 +3,8 @@ FROM node:18 AS build
 
 WORKDIR /app
 
+ENV CI=false
+
 # Copy package.json and package-lock.json to the container
 COPY package*.json ./
 
@@ -13,7 +15,7 @@ RUN npm install
 COPY . .
 
 # Build the React app
-RUN export CI=false && npm run build
+RUN npm run build
 
 # Serve stage
 FROM nginx:alpine
